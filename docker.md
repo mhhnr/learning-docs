@@ -622,4 +622,478 @@ docker info                        # Display system information
 docker version                     # Show Docker version
 ```
 
-This guide covers all fundamental Docker concepts using a simple Python Flask application. You can try each command in Play with Docker to see how it works in practice. Start with the basic concepts and gradually move to more advanced ones as you become comfortable.
+# Comprehensive Docker Commands Guide
+
+This guide provides a detailed explanation of Docker commands in a logical flow, from getting started to advanced usage. Each term is explained as it's introduced since you're new to Docker and coding.
+
+## Docker Basics - Getting Started
+
+`docker version` - Shows the Docker version information. This tells you what version of Docker you have installed, both for the client (the command-line tool you use) and the server (the background service that manages containers).
+
+`docker info` - Displays detailed information about your Docker installation. This includes the number of containers, images, system-wide information, and configuration details.
+
+`docker help` - Shows help information with a list of all available commands. If you're ever unsure about a command, this is a good place to start.
+
+`docker command --help` - Get help on a specific command. For example, `docker run --help` will show all options for the run command.
+
+## Working with Docker Images
+
+An **image** is a read-only template with instructions for creating a Docker container. Think of it like a snapshot or blueprint of an application and its environment.
+
+`docker images` - Lists all locally available images. These are the templates you have downloaded or created that are ready to be used to create containers.
+
+`docker pull [IMAGE]` - Downloads an image from Docker Hub (or another registry). Docker Hub is like an app store for Docker images, containing thousands of pre-made images.
+Example: `docker pull nginx` - Downloads the official Nginx web server image.
+
+`docker search [TERM]` - Searches Docker Hub for images that match the specified term.
+Example: `docker search python` - Shows Python-related images.
+
+`docker build -t [NAME:TAG] [PATH]` - Builds an image from a Dockerfile in the specified path. The `-t` flag lets you give your image a custom name and tag.
+Example: `docker build -t myapp:1.0 .` - Builds an image named "myapp" with tag "1.0" using the Dockerfile in the current directory.
+
+`docker tag [SOURCE_IMAGE] [TARGET_IMAGE]` - Creates a new tag for an image. This is like creating an alias or another name for the same image.
+Example: `docker tag myapp:1.0 myapp:latest` - Tags the image "myapp:1.0" as "myapp:latest".
+
+`docker history [IMAGE]` - Shows the history of an image, including the layers that make it up. Images are built in layers, with each instruction in the Dockerfile creating a new layer.
+
+`docker rmi [IMAGE]` - Removes one or more images. This frees up space by deleting images you no longer need.
+Example: `docker rmi nginx` - Removes the nginx image.
+
+`docker image prune` - Removes unused images. These are images that aren't associated with a container, often left behind when you've updated to newer versions.
+
+`docker image prune -a` - Removes all unused images, not just dangling ones (images that don't have a tag).
+
+## Creating and Managing Containers
+
+A **container** is a runnable instance of an image. It's a lightweight, standalone, executable package that includes everything needed to run an application.
+
+`docker create [IMAGE]` - Creates a new container without starting it. This prepares a container for use but doesn't run it yet.
+Example: `docker create nginx` - Creates a container from the Nginx image.
+
+`docker run [OPTIONS] [IMAGE] [COMMAND]` - Creates and starts a new container. This is the most common way to start a container.
+Example: `docker run -d -p 8080:80 nginx` - Runs Nginx in the background, mapping port 8080 on your computer to port 80 in the container.
+
+Common options for `docker run`:
+- `-d` or `--detach`: Run container in the background (detached mode)
+- `-p` or `--publish`: Map a port from the container to your host machine (format: host_port:container_port)
+- `-v` or `--volume`: Mount a volume (format: host_path:container_path)
+- `-e` or `--env`: Set environment variables
+- `--name`: Assign a name to the container
+- `--rm`: Automatically remove the container when it exits
+- `-it`: Interactive mode with a terminal (useful for command-line programs)
+- `--network`: Connect a container to a network
+
+`docker ps` - Lists running containers. This shows which containers are currently active on your system.
+
+`docker ps -a` - Lists all containers, including stopped ones. This helps you see the history of containers you've created.
+
+`docker start [CONTAINER]` - Starts a stopped container. Use this to restart a container that was previously stopped.
+Example: `docker start my_container` - Starts a container named "my_container".
+
+`docker stop [CONTAINER]` - Stops a running container gracefully. This sends a SIGTERM signal to the main process in the container, giving it time to shut down cleanly.
+Example: `docker stop my_container` - Stops a container named "my_container".
+
+`docker kill [CONTAINER]` - Stops a container immediately (sends SIGKILL). This is a forceful stop that doesn't give the container time to clean up.
+
+`docker restart [CONTAINER]` - Stops and then starts a container. This is useful for applying configuration changes that require a restart.
+
+`docker pause [CONTAINER]` - Temporarily pauses processes in a container. The container still exists but its processes are frozen until unpaused.
+
+`docker unpause [CONTAINER]` - Unpauses a paused container.
+
+`docker rm [CONTAINER]` - Removes a stopped container. This completely deletes the container and frees up the resources it was using.
+Example: `docker rm my_container` - Removes a container named "my_container".
+
+`docker rm -f [CONTAINER]` - Forces removal of a running container. This stops and removes the container in one command.
+
+`docker container prune` - Removes all stopped containers. This helps clean up your system by removing containers you're no longer using.
+
+## Container Operations
+
+`docker rename [CONTAINER] [NEW_NAME]` - Renames a container. This changes the name that Docker uses to identify the container.
+Example: `docker rename old_name new_name` - Renames a container from "old_name" to "new_name".
+
+`docker update [OPTIONS] [CONTAINER]` - Updates container configuration. This lets you change certain settings without restarting the container.
+Example: `docker update --memory 512m my_container` - Updates the memory limit for "my_container" to 512 MB.
+
+`docker logs [CONTAINER]` - Views the logs (output) from a container. This shows what the application inside the container has printed to its console.
+Example: `docker logs my_web_app` - Shows logs for a container named "my_web_app".
+
+`docker logs -f [CONTAINER]` - Follows the logs in real-time, similar to 'tail -f'. This shows new log entries as they're generated.
+
+`docker logs --tail [NUMBER] [CONTAINER]` - Shows only the last N lines of logs.
+Example: `docker logs --tail 100 my_container` - Shows the last 100 lines of logs.
+
+`docker logs --since [TIME] [CONTAINER]` - Shows logs since a specific time.
+Example: `docker logs --since 2023-01-01T00:00:00 my_container` - Shows logs from January 1, 2023 onwards.
+
+`docker top [CONTAINER]` - Displays the running processes in a container. This is similar to the 'top' command in Linux.
+
+`docker stats [CONTAINER]` - Shows live resource usage statistics for a container. This displays CPU, memory, network, and disk usage.
+
+`docker exec [OPTIONS] [CONTAINER] [COMMAND]` - Runs a command in a running container. This lets you interact with a container while it's running.
+Example: `docker exec -it my_container bash` - Starts a bash shell inside a container named "my_container".
+
+Common options for `docker exec`:
+- `-i` or `--interactive`: Keep STDIN open
+- `-t` or `--tty`: Allocate a pseudo-TTY (terminal)
+- `-e` or `--env`: Set environment variables
+- `-w` or `--workdir`: Set working directory inside the container
+
+`docker attach [CONTAINER]` - Attaches your terminal to a running container. This connects your terminal directly to the main process of the container.
+
+`docker cp [CONTAINER]:[SRC_PATH] [DEST_PATH]` - Copies files between a container and the local filesystem. This works in both directions.
+Example: `docker cp my_container:/app/config.json ./config.json` - Copies a file from the container to your local system.
+Example: `docker cp ./data.txt my_container:/app/data.txt` - Copies a file from your local system to the container.
+
+`docker diff [CONTAINER]` - Shows changes to files in a container's filesystem. This helps you see what files have been modified, added, or deleted.
+
+`docker commit [CONTAINER] [NEW_IMAGE_NAME]` - Creates a new image from a container's changes. This captures the current state of a container as a new image.
+Example: `docker commit my_container my_custom_image:1.0` - Creates a new image from the state of "my_container".
+
+## Working with Volumes
+
+A **volume** is a persistent data storage area that exists outside of the container but can be used by containers. Volumes are used to store data that should persist even when containers are stopped or removed.
+
+`docker volume create [VOLUME]` - Creates a named volume. Named volumes are managed by Docker and stored in a designated location on your host system.
+Example: `docker volume create my_data` - Creates a volume named "my_data".
+
+`docker volume ls` - Lists all volumes. This shows all the named volumes that Docker is managing.
+
+`docker volume inspect [VOLUME]` - Displays detailed information about a volume, including where it's stored on the host.
+Example: `docker volume inspect my_data` - Shows details about the "my_data" volume.
+
+`docker volume rm [VOLUME]` - Removes a volume. This deletes the volume and all data stored in it.
+Example: `docker volume rm my_data` - Removes the "my_data" volume.
+
+`docker volume prune` - Removes all unused volumes. This helps clean up volumes that aren't connected to any containers.
+
+Using volumes with containers:
+- `docker run -v [VOLUME_NAME]:[CONTAINER_PATH] [IMAGE]` - Mounts a named volume.
+  Example: `docker run -v my_data:/app/data nginx` - Mounts the "my_data" volume to /app/data in the container.
+  
+- `docker run -v [HOST_PATH]:[CONTAINER_PATH] [IMAGE]` - Mounts a host directory (bind mount).
+  Example: `docker run -v /home/user/data:/app/data nginx` - Mounts a local directory to the container.
+
+## Working with Networks
+
+Docker **networks** allow containers to communicate with each other. Different network types provide different levels of isolation and connectivity.
+
+`docker network create [NETWORK]` - Creates a new network. This sets up a new communication channel for containers.
+Example: `docker network create my_network` - Creates a network named "my_network".
+
+Common options for `docker network create`:
+- `--driver` - Specify the network driver (bridge, overlay, macvlan, etc.)
+- `--subnet` - Specify the subnet in CIDR format
+- `--gateway` - Specify the gateway
+- `--ip-range` - Specify the IP range
+
+`docker network ls` - Lists all networks. This shows all the networks that Docker is managing.
+
+`docker network inspect [NETWORK]` - Displays detailed information about a network, including connected containers.
+Example: `docker network inspect my_network` - Shows details about the "my_network" network.
+
+`docker network connect [NETWORK] [CONTAINER]` - Connects a container to a network. This allows the container to communicate with other containers on the same network.
+Example: `docker network connect my_network my_container` - Connects "my_container" to "my_network".
+
+`docker network disconnect [NETWORK] [CONTAINER]` - Disconnects a container from a network.
+Example: `docker network disconnect my_network my_container` - Disconnects "my_container" from "my_network".
+
+`docker network rm [NETWORK]` - Removes a network. This deletes the network and disconnects all containers from it.
+Example: `docker network rm my_network` - Removes the "my_network" network.
+
+`docker network prune` - Removes all unused networks. This helps clean up networks that aren't connected to any containers.
+
+## Docker Compose
+
+**Docker Compose** is a tool for defining and running multi-container Docker applications. It uses a YAML file to configure all your application's services, networks, and volumes in one place.
+
+`docker-compose up` - Creates and starts containers defined in docker-compose.yml. This launches your entire application stack.
+Example: `docker-compose up` - Starts all services defined in your docker-compose.yml file.
+
+`docker-compose up -d` - Runs containers in the background (detached mode).
+
+`docker-compose down` - Stops and removes containers, networks, and volumes defined in docker-compose.yml. This completely tears down your application.
+
+`docker-compose ps` - Lists containers managed by docker-compose. This shows the status of all containers in your application.
+
+`docker-compose logs` - Views output from containers. This shows logs from all containers in your application.
+
+`docker-compose logs -f` - Follows log output in real-time. This shows new log entries as they're generated.
+
+`docker-compose logs [SERVICE]` - Views logs for a specific service.
+Example: `docker-compose logs web` - Shows logs for the "web" service.
+
+`docker-compose exec [SERVICE] [COMMAND]` - Runs a command in a running service container.
+Example: `docker-compose exec web bash` - Starts a bash shell in the "web" service container.
+
+`docker-compose build` - Builds or rebuilds services defined in docker-compose.yml. This updates your service images based on their Dockerfiles.
+
+`docker-compose pull` - Pulls images for services defined in docker-compose.yml. This downloads the latest versions of the images used by your services.
+
+`docker-compose restart` - Restarts all services. This stops and then starts all containers in your application.
+
+`docker-compose restart [SERVICE]` - Restarts a specific service.
+Example: `docker-compose restart web` - Restarts the "web" service.
+
+## Docker Registry and Distribution
+
+A **registry** is a storage and distribution system for Docker images. The default registry is Docker Hub, but you can use other public or private registries.
+
+`docker login [REGISTRY]` - Logs in to a registry. This authenticates your Docker client with the registry so you can push and pull private images.
+Example: `docker login` - Logs in to Docker Hub.
+Example: `docker login registry.example.com` - Logs in to a private registry.
+
+`docker logout [REGISTRY]` - Logs out from a registry. This removes the authentication credentials from your Docker client.
+
+`docker push [IMAGE]` - Pushes an image to a registry. This uploads your local image to make it available to others.
+Example: `docker push username/my_image:1.0` - Pushes an image to Docker Hub.
+
+`docker pull [IMAGE]` - Pulls an image from a registry. This downloads an image to your local system.
+Example: `docker pull username/my_image:1.0` - Pulls an image from Docker Hub.
+
+`docker tag [SOURCE_IMAGE] [TARGET_IMAGE]` - Creates a new tag for an image. This is often used to prepare an image for pushing to a registry.
+Example: `docker tag my_image:1.0 username/my_image:1.0` - Tags a local image for Docker Hub.
+
+## Docker System Management
+
+`docker system df` - Shows Docker disk usage. This displays how much disk space is being used by images, containers, and volumes.
+
+`docker system prune` - Removes unused data. This cleans up your system by removing unused containers, networks, images, and build cache.
+
+`docker system prune -a` - Removes all unused data, including unused images. This is a more aggressive cleanup that removes all unused objects.
+
+`docker system prune --volumes` - Removes unused data, including volumes. This cleans up everything, including persistent volumes.
+
+`docker system info` - Same as `docker info`. Shows system-wide information.
+
+`docker system events` - Shows real-time events from the Docker daemon. This is useful for monitoring Docker activity.
+
+## Docker Image Management (Advanced)
+
+`docker image ls` - Lists images (same as `docker images`).
+
+`docker image history [IMAGE]` - Shows the history of an image. This displays the layers that make up an image and how they were created.
+
+`docker image inspect [IMAGE]` - Shows detailed information about an image. This includes metadata, configuration, and layer information.
+
+`docker image prune` - Removes unused images. This helps free up disk space by removing images that aren't associated with a container.
+
+`docker image save [IMAGE] > [TAR_FILE]` - Saves an image to a tar archive. This creates a backup of an image that can be loaded later.
+Example: `docker image save my_image:1.0 > my_image.tar` - Saves "my_image:1.0" to a file.
+
+`docker image load < [TAR_FILE]` - Loads an image from a tar archive. This restores an image from a backup.
+Example: `docker image load < my_image.tar` - Loads an image from a file.
+
+## Container Inspection and Debugging
+
+`docker inspect [OBJECT]` - Shows detailed information about a Docker object (container, image, volume, network, etc.). This provides a comprehensive view of the object's configuration and state.
+Example: `docker inspect my_container` - Shows detailed information about "my_container".
+
+`docker stats` - Shows live resource usage statistics for all containers. This displays CPU, memory, network, and disk usage in real-time.
+
+`docker events` - Shows real-time events from the Docker daemon. This is useful for monitoring Docker activity.
+
+`docker port [CONTAINER]` - Lists port mappings for a container. This shows how container ports are mapped to host ports.
+Example: `docker port my_web_app` - Shows port mappings for "my_web_app".
+
+## Container Resource Constraints
+
+Docker allows you to limit the resources (CPU, memory, etc.) that a container can use.
+
+`docker run --memory=[LIMIT] [IMAGE]` - Limits the memory a container can use.
+Example: `docker run --memory=512m nginx` - Limits the container to 512 MB of memory.
+
+`docker run --cpus=[LIMIT] [IMAGE]` - Limits the CPU usage of a container.
+Example: `docker run --cpus=0.5 nginx` - Limits the container to using 50% of a CPU core.
+
+`docker run --memory-reservation=[LIMIT] [IMAGE]` - Sets a soft limit for memory (container tries to stay below this).
+Example: `docker run --memory-reservation=256m nginx` - Sets a soft limit of 256 MB.
+
+`docker run --cpu-shares=[VALUE] [IMAGE]` - Sets the CPU share weight for a container. This is a relative value compared to other containers.
+Example: `docker run --cpu-shares=512 nginx` - Sets CPU share weight to 512 (default is 1024).
+
+`docker update --memory=[LIMIT] [CONTAINER]` - Updates memory limit for a running container.
+Example: `docker update --memory=1g my_container` - Updates the memory limit to 1 GB.
+
+## Docker Swarm (Container Orchestration)
+
+**Docker Swarm** is Docker's native clustering and orchestration solution. It turns a group of Docker hosts into a single, virtual Docker host.
+
+`docker swarm init` - Initializes a swarm. This turns your Docker host into a swarm manager.
+Example: `docker swarm init --advertise-addr 192.168.1.10` - Initializes a swarm with the specified IP address.
+
+`docker swarm join --token [TOKEN] [MANAGER_IP:PORT]` - Joins a node to a swarm. This adds your Docker host to an existing swarm.
+
+`docker swarm leave` - Leaves a swarm. This removes your Docker host from the swarm.
+
+`docker swarm leave --force` - Forces a manager to leave the swarm.
+
+`docker node ls` - Lists nodes in the swarm. This shows all the Docker hosts that are part of the swarm.
+
+`docker service create [OPTIONS] [IMAGE] [COMMAND]` - Creates a new service in the swarm. A service is a group of containers that work together.
+Example: `docker service create --name my_web --replicas 3 --publish 8080:80 nginx` - Creates a service with 3 replicas of Nginx.
+
+`docker service ls` - Lists services in the swarm. This shows all the services that are running in the swarm.
+
+`docker service ps [SERVICE]` - Lists the tasks of a service. This shows the containers that are part of the service and their status.
+Example: `docker service ps my_web` - Shows tasks for the "my_web" service.
+
+`docker service update [OPTIONS] [SERVICE]` - Updates a service. This lets you change the configuration of a running service.
+Example: `docker service update --replicas 5 my_web` - Updates the "my_web" service to have 5 replicas.
+
+`docker service rm [SERVICE]` - Removes a service. This stops and removes all containers associated with the service.
+Example: `docker service rm my_web` - Removes the "my_web" service.
+
+## Advanced Docker Features
+
+`docker save [IMAGE] > [TAR_FILE]` - Saves one or more images to a tar archive. This creates a backup of your images.
+Example: `docker save my_image:1.0 > my_image.tar` - Saves "my_image:1.0" to a file.
+
+`docker load < [TAR_FILE]` - Loads images from a tar archive. This restores images from a backup.
+Example: `docker load < my_image.tar` - Loads images from a file.
+
+`docker export [CONTAINER] > [TAR_FILE]` - Exports a container's filesystem as a tar archive. This creates a backup of a container's filesystem without its configuration.
+Example: `docker export my_container > my_container.tar` - Exports "my_container" to a file.
+
+`docker import [TAR_FILE] [REPOSITORY[:TAG]]` - Imports a container filesystem from a tar archive and creates an image. This creates a new image from a backup of a container's filesystem.
+Example: `docker import my_container.tar my_new_image:1.0` - Creates "my_new_image:1.0" from a tar file.
+
+`docker wait [CONTAINER]` - Blocks until a container stops, then prints its exit code. This is useful for scripts that need to wait for a container to finish.
+
+`docker plugin install [PLUGIN]` - Installs a Docker plugin. Plugins extend Docker's functionality.
+Example: `docker plugin install grafana/loki-docker-driver:latest` - Installs the Loki logging plugin.
+
+`docker buildx` - Extended build capabilities with BuildKit. This provides advanced features for building images.
+Example: `docker buildx build --platform linux/amd64,linux/arm64 -t my_image:1.0 .` - Builds an image for multiple platforms.
+
+`docker scan [IMAGE]` - Scans an image for vulnerabilities. This helps identify security issues in your images.
+Example: `docker scan my_image:1.0` - Scans "my_image:1.0" for vulnerabilities.
+
+## Dockerfile Basics
+
+A **Dockerfile** is a text file that contains the instructions to build a Docker image. Here are some common instructions:
+
+`FROM` - Sets the base image. This is the starting point for your image, usually an operating system or runtime environment.
+Example: `FROM python:3.9-slim`
+
+`WORKDIR` - Sets the working directory inside the container. This is where commands will be executed.
+Example: `WORKDIR /app`
+
+`COPY` - Copies files from your local filesystem into the image. This adds your application code to the image.
+Example: `COPY . /app`
+
+`ADD` - Similar to COPY, but can also handle URLs and automatically extract archives. This is more powerful but can have unexpected behavior.
+Example: `ADD https://example.com/file.tar.gz /app`
+
+`RUN` - Executes commands during the build process. This is used to install dependencies and set up your environment.
+Example: `RUN pip install -r requirements.txt`
+
+`ENV` - Sets environment variables in the image. These variables will be available to processes in the container.
+Example: `ENV PORT=8080`
+
+`EXPOSE` - Documents which ports the container listens on. This is informational and doesn't actually publish the ports.
+Example: `EXPOSE 80`
+
+`CMD` - Sets the default command to run when the container starts. This is the main process of your container.
+Example: `CMD ["python", "app.py"]`
+
+`ENTRYPOINT` - Sets the main executable for the container. This is similar to CMD but harder to override.
+Example: `ENTRYPOINT ["python"]`
+
+## Docker Context Management
+
+A Docker **context** allows you to manage multiple Docker endpoints (different Docker hosts) from a single Docker client.
+
+`docker context create [CONTEXT] --docker "host=ssh://user@host"` - Creates a new context for connecting to a remote Docker host.
+Example: `docker context create my-server --docker "host=ssh://user@server.example.com"` - Creates a context for connecting to a remote server.
+
+`docker context ls` - Lists available contexts. This shows all the Docker endpoints you can connect to.
+
+`docker context use [CONTEXT]` - Sets the default context. This changes which Docker host your commands are sent to.
+Example: `docker context use my-server` - Switches to the "my-server" context.
+
+`docker context rm [CONTEXT]` - Removes a context. This deletes the connection information for a Docker host.
+Example: `docker context rm my-server` - Removes the "my-server" context.
+
+## Docker Security
+
+`docker run --security-opt seccomp=profile.json [IMAGE]` - Runs a container with a custom seccomp profile. This restricts which system calls the container can make.
+Example: `docker run --security-opt seccomp=my_profile.json nginx` - Runs Nginx with a custom seccomp profile.
+
+`docker run --security-opt apparmor=profile [IMAGE]` - Runs a container with a custom AppArmor profile. This restricts what the container can access.
+Example: `docker run --security-opt apparmor=docker-nginx nginx` - Runs Nginx with a custom AppArmor profile.
+
+`docker run --cap-drop ALL --cap-add NET_BIND_SERVICE [IMAGE]` - Runs a container with minimal capabilities. This limits what the container can do to improve security.
+Example: `docker run --cap-drop ALL --cap-add NET_BIND_SERVICE nginx` - Runs Nginx with only the capability to bind to privileged ports.
+
+`docker run --read-only [IMAGE]` - Runs a container with a read-only filesystem. This prevents modifications to the container's filesystem.
+Example: `docker run --read-only nginx` - Runs Nginx with a read-only filesystem.
+
+## Docker Monitoring
+
+`docker events` - Streams real-time events from the Docker daemon. This shows all Docker events as they happen.
+
+`docker stats` - Shows live resource usage statistics for containers. This displays CPU, memory, network, and disk usage in real-time.
+
+`docker top [CONTAINER]` - Shows the running processes in a container. This is similar to the 'top' command in Linux.
+Example: `docker top my_container` - Shows processes in "my_container".
+
+`docker logs [CONTAINER]` - Views the logs (output) from a container. This shows what the application inside the container has printed to its console.
+Example: `docker logs my_container` - Shows logs for "my_container".
+
+## Docker Configuration
+
+`docker config create [CONFIG_NAME] [FILE]` - Creates a config from a file. Configs are used to provide configuration data to services in a swarm.
+Example: `docker config create my_config config.json` - Creates a config named "my_config" from "config.json".
+
+`docker config ls` - Lists configs. This shows all the configs available in the swarm.
+
+`docker config rm [CONFIG_NAME]` - Removes a config. This deletes the config from the swarm.
+Example: `docker config rm my_config` - Removes the "my_config" config.
+
+## Docker Secrets
+
+A **secret** is a piece of sensitive data that you don't want to expose in your Dockerfile or application code, such as passwords or API keys.
+
+`docker secret create [SECRET_NAME] [FILE]` - Creates a secret from a file. Secrets are used to provide sensitive data to services in a swarm.
+Example: `docker secret create my_secret password.txt` - Creates a secret named "my_secret" from "password.txt".
+
+`docker secret ls` - Lists secrets. This shows all the secrets available in the swarm.
+
+`docker secret rm [SECRET_NAME]` - Removes a secret. This deletes the secret from the swarm.
+Example: `docker secret rm my_secret` - Removes the "my_secret" secret.
+
+## Complete Flow of Docker Usage
+
+1. **Install Docker** - Set up Docker on your system.
+2. **Pull or Build an Image** - Get or create the template for your application.
+   - `docker pull nginx` or `docker build -t my_app .`
+3. **Create and Run a Container** - Start your application in a container.
+   - `docker run -d -p 8080:80 --name my_web nginx`
+4. **Check Container Status** - Verify your container is running.
+   - `docker ps` or `docker ps -a`
+5. **Interact with the Container** - Work with your running container.
+   - View logs: `docker logs my_web`
+   - Execute commands: `docker exec -it my_web bash`
+   - Copy files: `docker cp file.txt my_web:/app/`
+6. **Manage Container Lifecycle** - Control your container.
+   - Stop: `docker stop my_web`
+   - Start: `docker start my_web`
+   - Restart: `docker restart my_web`
+   - Remove: `docker rm my_web`
+7. **Work with Volumes** - Persist data outside the container.
+   - Create: `docker volume create my_data`
+   - Use: `docker run -v my_data:/app/data nginx`
+8. **Set up Networks** - Allow containers to communicate.
+   - Create: `docker network create my_network`
+   - Connect: `docker network connect my_network my_web`
+9. **Use Docker Compose** - Manage multi-container applications.
+   - Start: `docker-compose up -d`
+   - Stop: `docker-compose down`
+10. **Share Your Image** - Push your image to a registry.
+    - Tag: `docker tag my_app username/my_app:1.0`
+    - Push: `docker push username/my_app:1.0`
+11. **Clean Up** - Keep your system tidy.
+    - Remove unused resources: `docker system prune`
+
