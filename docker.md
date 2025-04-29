@@ -68,7 +68,6 @@
 44. `--network` - Connect to a network
 45. `--restart` - Restart policy for the container
 
-Great! Here's a Docker challenge for you to work on using Play with Docker:
 
 ## Challenge: Create a Simple Web Server and Check Its Logs
 
