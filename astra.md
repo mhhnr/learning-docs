@@ -1,3 +1,5 @@
+curl -s https://api.openai.com/v1/models -H "Authorization: Bearer sk-proj-gmN8Y8FB8PehC9KkCiAiT3BlbkFJD9cGCgKOiiXJwup78nHp" | grep -o '"id": "[^"]*"' | sort
+
 
 ## What is Astra?
 
