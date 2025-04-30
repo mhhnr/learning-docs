@@ -1,4 +1,4 @@
-curl -s https://api.openai.com/v1/models -H "Authorization: Bearer sk-proj-gmN8Y8FB8PehC9KkCiAiT3BlbkFJD9cGCgKOiiXJwup78nHp" | grep -o '"id": "[^"]*"' | sort
+curl -s https://api.openai.com/v1/models -H "Authorization: Bearer OPEN_API_KEY" | grep -o '"id": "[^"]*"' | sort
 
 "id": "gpt-4.1-mini"
 "id": "gpt-4.1-nano"
