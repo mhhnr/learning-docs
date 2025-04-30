@@ -84,6 +84,8 @@ def read_root():
 
 # Run the server (in terminal):
 # uvicorn main:app --reload
+# What is Uvicorn?
+# Uvicorn is an ASGI (Asynchronous Server Gateway Interface) web server implementation for Python. In simpler terms, it's the software that actually runs your FastAPI application and handles web requests. It acts as the bridge between your FastAPI code and the internet, receiving HTTP requests and sending responses back.
 # main: the Python file name (without .py)
 # app: the FastAPI instance name
 # --reload: auto-reload when code changes (for development)
