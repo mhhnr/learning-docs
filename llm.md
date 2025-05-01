@@ -1,4 +1,4 @@
-# Understanding LLMs Mathematically: Expanded Examples
+# Understanding LLMs Mathematically: 
 
 > **Note on Example Values:** Throughout this document, I've used specific numerical values to make the examples concrete. These values are simplified representations chosen to demonstrate the mathematical operations clearly, not actual values from real LLMs. In practice, real LLMs would have much larger dimensions (768 to 4096 or more), and the actual values would be learned during training rather than manually set. The token IDs (like 7, 102, 408) are arbitrary examples that represent how words get mapped to unique numbers in a vocabulary. In real systems, these mappings are created based on frequency in the training data.
 
