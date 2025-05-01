@@ -2,7 +2,61 @@
 
 > **Note on Example Values:** Throughout this document, I've used specific numerical values to make the examples concrete. These values are simplified representations chosen to demonstrate the mathematical operations clearly, not actual values from real LLMs. In practice, real LLMs would have much larger dimensions (768 to 4096 or more), and the actual values would be learned during training rather than manually set. The token IDs (like 7, 102, 408) are arbitrary examples that represent how words get mapped to unique numbers in a vocabulary. In real systems, these mappings are created based on frequency in the training data.
 
-## Foundation Mathematical Concepts with Detailed Examples
+## Transformer Architecture in Detail
+
+Before diving into specific mathematical examples, let's understand the overall Transformer architecture that powers modern LLMs:
+
+> *Note: The Transformer architecture was introduced in the 2017 paper "Attention Is All You Need" by Vaswani et al. The values in this explanation are simplified for clarity, but the architecture description accurately represents how real LLMs are structured.*
+
+### Core Components of a Transformer
+
+1. **Input Embedding Layer**: Converts tokens to vectors (as described earlier)
+
+2. **Positional Encoding**: Adds position information to embeddings
+   - Formula: PE(pos, 2i) = sin(pos/10000^(2i/d_model))
+   - Formula: PE(pos, 2i+1) = cos(pos/10000^(2i/d_model))
+   - Where pos is the position and i is the dimension
+
+3. **Multiple Transformer Layers** (typically 12-96), each containing:
+   - **Multi-Head Self-Attention**: Multiple attention mechanisms in parallel
+   - **Layer Normalization**: Normalizes outputs to prevent value explosion
+   - **Feed-Forward Network**: Two linear transformations with a ReLU activation
+   - **Residual Connections**: Add original inputs to outputs of sub-layers
+
+4. **Output Layer**: Projects to vocabulary size and applies softmax
+
+### Transformer Block Mathematical Definition
+
+Each Transformer layer/block can be mathematically defined as:
+
+1. **Self-Attention**:
+   - Q, K, V = InputX × W_Q, InputX × W_K, InputX × W_V
+   - Attention(Q, K, V) = softmax(QK^T/√d_k)V
+
+2. **Multi-Head Attention** (with h heads):
+   - head_i = Attention(XW_Q^i, XW_K^i, XW_V^i)
+   - MultiHead(X) = Concat(head_1, ..., head_h)W^O
+
+3. **Feed-Forward Network**:
+   - FFN(x) = max(0, xW_1 + b_1)W_2 + b_2
+
+4. **Complete Transformer Layer**:
+   - X' = LayerNorm(X + MultiHead(X))
+   - Output = LayerNorm(X' + FFN(X'))
+
+In modern LLMs like GPT, Claude, or Llama, these layers are stacked many times (12-100+ layers), with each layer refining the representations from the previous layer.
+
+### Scaling in Transformers
+
+The power of Transformers comes from their ability to scale:
+
+- **Model Dimension (d_model)**: Size of embeddings (768-12288)
+- **Number of Heads (h)**: Parallel attention mechanisms (12-128)
+- **Number of Layers (L)**: Stacked transformer blocks (12-96)
+- **Feed-Forward Dimension (d_ff)**: Usually 4 × d_model
+
+As these numbers increase, the model becomes more powerful but also more computationally expensive.
+
 
 ### 1. Vectors: Detailed Operations
 
@@ -341,3 +395,54 @@ These mathematical examples provide the building blocks of modern LLMs:
 6. **Positional Encoding**: Adds position information
 7. **Output Layer**: Converts final representations to word probabilities
 
+These operations are repeated in each transformer layer (typically 12-96 layers in modern LLMs), with each layer refining the representations from the previous layer.
+
+## How LLMs Evolved from the Transformer Architecture
+
+The journey from the original Transformer to modern LLMs like GPT-4, Claude, and Llama can be understood through several key developments:
+
+### 1. From Transformer to GPT (Generative Pre-trained Transformer)
+
+The original Transformer paper in 2017 introduced a model with both an encoder (for understanding input) and a decoder (for generating output), primarily designed for translation tasks. LLMs evolved by:
+
+- **Focusing on the decoder part only**: Modern LLMs like GPT models use only the decoder portion of the original Transformer, optimized for text generation.
+
+- **Scaling up massively**: While the original Transformer had about 65 million parameters, modern LLMs have billions or even trillions of parameters. GPT-3 has 175 billion, and GPT-4 is estimated to have trillions.
+
+- **Changing the training objective**: Instead of translation, LLMs are trained to predict the next word in a sequence, which turns out to be a powerful way to learn language understanding.
+
+### 2. Key Innovations in Training Approach
+
+- **Unsupervised pre-training**: LLMs are first trained on massive text datasets without human labels, learning the patterns and structures of language.
+
+- **Fine-tuning**: After pre-training, models are fine-tuned on specific tasks or with human feedback to make them more helpful and safe.
+
+- **Context window expansion**: While early models could only "see" a few hundred tokens, modern LLMs can process tens or hundreds of thousands of tokens at once.
+
+### 3. Architectural Refinements
+
+- **Rotary positional embeddings**: Improved how models understand position information.
+
+- **Flash attention**: More efficient attention computation allowing for faster training and inference.
+
+- **Mixture of Experts**: Some models use specialized "expert" neural networks for different types of content.
+
+- **Improved tokenization**: Better ways of breaking text into tokens, allowing for more efficient processing.
+
+### 4. In Simple Words: How a Transformer Became an LLM
+
+Imagine the Transformer as a brilliant but specialized language student who's good at translating between languages. To turn this student into an LLM:
+
+1. **Focus on generation**: Instead of translating, we train it to continue text (like a student who can complete your sentences).
+
+2. **Give it more "brain cells"**: We dramatically increase its capacity by adding more neurons (parameters).
+
+3. **Let it read the internet**: We expose it to vast amounts of text data from books, articles, websites, and code.
+
+4. **Teach it to remember more**: We expand how much text it can work with at once (context window).
+
+5. **Train it to be helpful**: We guide it with human feedback to make it more useful and safe.
+
+Through this process, what started as a specialized translation tool became a general-purpose language model capable of writing essays, answering questions, coding, and engaging in conversation.
+
+The key insight was that the next-word prediction task—seemingly simple—forces the model to develop a deep understanding of language, including grammar, facts, reasoning, and even some common-sense understanding of the world. By scaling up this approach with more data, more parameters, and more computation, researchers discovered that these models developed increasingly sophisticated capabilities.
