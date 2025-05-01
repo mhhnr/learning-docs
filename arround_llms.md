@@ -340,7 +340,6 @@ The judge evaluates how well the LLM maintained context and adapted its response
 - Different demographics may have different preferences
 - Some models perform better on technical questions while others excel at creative tasks
 
-### Additional Important Benchmarks
 
 #### 7. TruthfulQA
 - **What it tests**: Model's tendency to reproduce common misconceptions and falsehoods
